@@ -155,25 +155,23 @@ Using cached data, Python Pandas dataframes will be pull from this data and prov
 
 + [Python Pandas library](https://pandas.pydata.org/)
 
-### ```memcached```
+### memcached
 
-Install and start before using this application.
+Install [```memcached```](https://memcached.org/) before before using this application.
 
-https://realpython.com/python-memcache-efficient-caching/
 
+#### Starting from command line
 ```bash
 $ memcached
 ```
 
+#### Clearing memcached during testing
 ```bash
 $ echo 'flush_all' | nc localhost 11211
 OK
 ```
 
 + [Python + Memcached: Efficient Caching in Distributed Applications](https://realpython.com/python-memcache-efficient-caching)
-+ [Memcached](https://memcached.org/)
-
-https://memcached.org/
 
 ---
 

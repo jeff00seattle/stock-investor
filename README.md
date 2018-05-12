@@ -23,8 +23,8 @@ Capital One next steps - Coding challenge
   * [Issues](#issues)
     + [Panda Warning: ```SettingWithCopyWarning```](#panda-warning-----settingwithcopywarning---)
     + [Code](#code)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+    
+---
 
 ## Capital One Investing Coding Test Instructions
 

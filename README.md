@@ -1,13 +1,15 @@
 # stock-investor
 Capital One next steps - Coding challenge
+    
+---
 
   * [Capital One Investing Coding Test Instructions](#capital-one-investing-coding-test-instructions)
   * [Investigation of WIKI API](#investigation-of-wiki-api)
   * [Development](#development)
     + [Python](#python)
-    + [Data Pulled from WIKI API and Cached to ```memcached```](#data-pulled-from-wiki-api-and-cached-to----memcached---)
-    + [Data Analytics using [Python Pandas library](https://pandas.pydata.org/)](#data-analytics-using--python-pandas-library--https---pandaspydataorg--)
-    + [[```memcached```](https://realpython.com/python-memcache-efficient-caching/)](#----memcached-----https---realpythoncom-python-memcache-efficient-caching--)
+    + [Data Pulled from WIKI API and Cached to memcached](#data-pulled-from-wiki-api-and-cached-to-memcached)
+    + [Data Analytics using Python Pandas](#data-analytics-using-python-pandas)
+    + [```memcached```](#---memcached---)
   * [Application](#application)
     + [Configuration](#configuration)
     + [```--help```](#-----help---)
@@ -142,15 +144,17 @@ This application will be built on two Python packages I currently have in Open S
 + https://pypi.org/project/logging-fortified/
 + https://pypi.org/project/requests-fortified/
 
-### Data Pulled from WIKI API and Cached to ```memcached```
+### Data Pulled from WIKI API and Cached to memcached
 
 By using memcached, for this exercise, data will be pulled once from WIKI API.
 
-### Data Analytics using [Python Pandas library](https://pandas.pydata.org/)
+### Data Analytics using Python Pandas
 
 Using cached data, Python Pandas dataframes will be pull from this data and provide requested results.
 
-### [```memcached```](https://realpython.com/python-memcache-efficient-caching/)
++ [Python Pandas library](https://pandas.pydata.org/)
+
+### ```memcached```
 
 Install and start before using this application.
 
@@ -164,6 +168,9 @@ $ memcached
 $ echo 'flush_all' | nc localhost 11211
 OK
 ```
+
++ [Python + Memcached: Efficient Caching in Distributed Applications](https://realpython.com/python-memcache-efficient-caching)
++ [Memcached](https://memcached.org/)
 
 https://memcached.org/
 

@@ -1,8 +1,7 @@
 # stock-investing
-# Capital One next steps - Coding challenge
+Capital One next steps - Coding challenge
 
 - [stock-investing](#stock-investing)
-- [Capital One next steps - Coding challenge](#capital-one-next-steps---coding-challenge)
   * [Capital One Investing Coding Test Instructions](#capital-one-investing-coding-test-instructions)
   * [Investigation of WIKI API](#investigation-of-wiki-api)
   * [Development](#development)

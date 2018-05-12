@@ -11,6 +11,9 @@ Version: Saturday, May 12, 2018 (PDT) 14:00
     + [Data Pulled from WIKI API and Cached to memcached](#data-pulled-from-wiki-api-and-cached-to-memcached)
     + [Data Analytics using Python Pandas](#data-analytics-using-python-pandas)
     + [```memcached```](#---memcached---)
+    + [Development Issues](#development-issues)
+      - [Panda Warning: ```SettingWithCopyWarning```](#panda-warning-----settingwithcopywarning---)
+      - [What is Required Next](#what-is-required-next)
   * [Application](#application)
     + [Configuration](#configuration)
     + [```--help```](#-----help---)
@@ -23,9 +26,6 @@ Version: Saturday, May 12, 2018 (PDT) 14:00
       - [Python3 Run](#python3-run-2)
     + [```--busy-day```](#-----busy-day---)
       - [Python3 Run](#python3-run-3)
-  * [Issues](#issues)
-    + [Panda Warning: ```SettingWithCopyWarning```](#panda-warning-----settingwithcopywarning---)
-    + [Code](#code)
     
 ---
 
@@ -174,6 +174,25 @@ OK
 + [Memcached](https://memcached.org/)
 
 https://memcached.org/
+
+---
+
+### Development Issues
+
+#### Panda Warning: ```SettingWithCopyWarning```
+
+```bash
+/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pandas/core/indexing.py:357: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+```
+
+#### What is Required Next
+
++ More comments in the code
++ CI Test
++ Bug:Fix overlapping of Cached Date Ranges.
+
 
 ## Application
 
@@ -891,20 +910,3 @@ python3 stock_investing/worker.py --api-key '[REDACTED]' --start-date '2017-01-0
     },
 ]
 ```
----
-
-## Issues
-
-### Panda Warning: ```SettingWithCopyWarning```
-
-```bash
-/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pandas/core/indexing.py:357: SettingWithCopyWarning:
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
-```
-
-### Code
-
-+ More comments
-+ Definitely Tests
-+ Fix overlapping of Cached Date Ranges.

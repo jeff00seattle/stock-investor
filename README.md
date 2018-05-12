@@ -73,6 +73,8 @@ When you have completed the exercise, please upload your entire solution to Gith
 an email with the URL of your repository to COFI_Coding_Exercise@capitalone.com and include your name in the email.
 Please make sure you have an appropriate README documenting how we should compile (if necessary) and run your solution.
 
+---
+
 ## Investigation of WIKI API
 
 Read the documentation of the API can be found [here](https://www.quandl.com/databases/WIKIP/documentation/about).
@@ -130,6 +132,8 @@ $cd ./stock_investing.sh \
   }
 }
 ```
+
+---
 
 ## Development
 
@@ -880,6 +884,7 @@ python3 stock_investing/worker.py --api-key '[REDACTED]' --start-date '2017-01-0
     },
 ]
 ```
+---
 
 ## Issues
 

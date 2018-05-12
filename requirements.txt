@@ -1,0 +1,4 @@
+logging-fortified>=0.1.0
+requests-fortified>=0.3.0
+pandas
+pymemcache

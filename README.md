@@ -6,8 +6,8 @@ Capital One next steps - Coding challenge
   * [Development](#development)
     + [Python](#python)
     + [Data Pulled from WIKI API and Cached to ```memcached```](#data-pulled-from-wiki-api-and-cached-to----memcached---)
-    + [Data Analytics](#data-analytics)
-    + [```memcached```](#---memcached---)
+    + [Data Analytics using [Python Pandas library](https://pandas.pydata.org/)](#data-analytics-using--python-pandas-library--https---pandaspydataorg--)
+    + [[```memcached```](https://realpython.com/python-memcache-efficient-caching/)](#----memcached-----https---realpythoncom-python-memcache-efficient-caching--)
   * [Application](#application)
     + [Configuration](#configuration)
     + [```--help```](#-----help---)
@@ -146,12 +146,11 @@ This application will be built on two Python packages I currently have in Open S
 
 By using memcached, for this exercise, data will be pulled once from WIKI API.
 
-### Data Analytics
+### Data Analytics using [Python Pandas library](https://pandas.pydata.org/)
 
 Using cached data, Python Pandas dataframes will be pull from this data and provide requested results.
 
-
-### ```memcached```
+### [```memcached```](https://realpython.com/python-memcache-efficient-caching/)
 
 Install and start before using this application.
 

@@ -1,5 +1,6 @@
 # stock-investor
 Capital One next steps - Coding challenge
+Version: Saturday, May 12, 2018 (PDT) 14:00
     
 ---
 

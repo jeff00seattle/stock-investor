@@ -1,6 +1,33 @@
 # stock-investing
 # Capital One next steps - Coding challenge
 
+- [stock-investing](#stock-investing)
+- [Capital One next steps - Coding challenge](#capital-one-next-steps---coding-challenge)
+  * [Capital One Investing Coding Test Instructions](#capital-one-investing-coding-test-instructions)
+  * [Investigation of WIKI API](#investigation-of-wiki-api)
+  * [Development](#development)
+    + [Python](#python)
+    + [Data Pulled from WIKI API and Cached to ```memcached```](#data-pulled-from-wiki-api-and-cached-to----memcached---)
+    + [Data Analytics](#data-analytics)
+    + [```memcached```](#---memcached---)
+  * [Application](#application)
+    + [Configuration](#configuration)
+    + [```--help```](#-----help---)
+    + [```--avg-monthly```](#-----avg-monthly---)
+      - [Python3 Run](#python3-run)
+      - [Known Issues: Python Pandas Warning: ```SettingWithCopyWarning```](#known-issues--python-pandas-warning-----settingwithcopywarning---)
+    + [```--max-daily-profit```](#-----max-daily-profit---)
+      - [Python3 Run](#python3-run-1)
+    + [```--biggest-loser```](#-----biggest-loser---)
+      - [Python3 Run](#python3-run-2)
+    + [```--busy-day```](#-----busy-day---)
+      - [Python3 Run](#python3-run-3)
+  * [Issues](#issues)
+    + [Panda Warning: ```SettingWithCopyWarning```](#panda-warning-----settingwithcopywarning---)
+    + [Code](#code)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 ## Capital One Investing Coding Test Instructions
 
 What We Are Looking For:

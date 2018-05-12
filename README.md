@@ -234,7 +234,11 @@ Usage: stock_investing/worker.py
 
 #### Python3 Run
 ```bash
-python3 stock_investing/worker.py --api-key '[REDACTED]' --start-date '2017-01-01' --end-date '2017-06-30' --avg-monthly
+python3 stock_investing/worker.py \
+  --api-key '[REDACTED]' \
+  --start-date '2017-01-01' \
+  --end-date '2017-06-30' \
+  --avg-monthly
 ```
 
 ```json
@@ -347,7 +351,11 @@ Try using .loc[row_indexer,col_indexer] = value instead
 #### Python3 Run
 
 ```bash
-python3 stock_investing/worker.py --api-key '[REDACTED]' --start-date '2017-01-01' --end-date '2017-06-30' --max-daily-profit
+python3 stock_investing/worker.py \
+  --api-key '[REDACTED]' \
+  --start-date '2017-01-01' \
+  --end-date '2017-06-30' \
+  --max-daily-profit
 ```
 
 ```json
@@ -364,7 +372,11 @@ python3 stock_investing/worker.py --api-key '[REDACTED]' --start-date '2017-01-0
 #### Python3 Run
 
 ```bash
-$ python3 stock_investing/worker.py --api-key '[REDACTED]' --start-date '2017-01-01' --end-date '2017-06-30' --biggest-loser
+$ python3 stock_investing/worker.py \
+  --api-key '[REDACTED]' \
+  --start-date '2017-01-01' \
+  --end-date '2017-06-30' \
+  --biggest-loser
 ```
 
 ```json
@@ -376,7 +388,11 @@ $ python3 stock_investing/worker.py --api-key '[REDACTED]' --start-date '2017-01
 #### Python3 Run
 
 ```bash
-python3 stock_investing/worker.py --api-key '[REDACTED]' --start-date '2017-01-01' --end-date '2017-06-30' --busy-day
+python3 stock_investing/worker.py \
+  --api-key '[REDACTED]' \
+  --start-date '2017-01-01' \
+  --end-date '2017-06-30' \
+  --busy-day
 ```
 
 ```json

@@ -344,10 +344,11 @@ class StockInvestor(object):
     def work(
         self
     ):
-        self.logger.debug(
-            "results",
-            extra=self.stocks_data
-        )
+        """Multithreaded handling of a split request into multiple tasks which pulled from
+        worker queue as the executor is made available.
+
+        :return: JSON: Found Result
+        """
 
         result = None
 
@@ -415,6 +416,11 @@ class StockInvestor(object):
         return result
 
     def work_process(self, wreq):
+        """Processes a single request to QUANDL WIKI API
+
+        :param wreq: StockInvestorRequest
+        :return: StockInvestorResponse
+        """
         self.logger.debug("Process: {}".format(wreq))
 
         request_params = {
@@ -467,7 +473,7 @@ class StockInvestor(object):
         request_headers=None,
         request_label=None
     ):
-        """
+        """Wrapper to requests handler created in requests-fortified.
         :param request_method:
         :param request_url:
         :param request_params:

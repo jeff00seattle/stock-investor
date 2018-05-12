@@ -141,9 +141,15 @@ $cd ./stock_investing.sh \
 ## Development
 
 ### Python
-This application will be built on two Python packages I currently have in Open Source Development, however, I have not made sources public yet:
+This application was built within my Python environment version 3.6.5.
+
+Two Python projects that I  have on PyPi and currently actively developing, however, I have not made sources public yet, where used with this coding challenge:
 + https://pypi.org/project/logging-fortified/
 + https://pypi.org/project/requests-fortified/
+
+### Asynchrous Execution
+
+This challenge is using [concurrent.futures](https://docs.python.org/3/library/concurrent.futures.html) module provides a high-level interface for asynchronously executing callables, which is native to Python 3.x.
 
 ### Data Pulled from WIKI API and Cached to memcached
 

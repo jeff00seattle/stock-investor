@@ -48,11 +48,11 @@ do
       shift 2 ;;
     --start-date)
       START_DATE="$2" ;
-      QUERY_STRING+="start_datetime=$START_DATE&"
+      QUERY_STRING+="start_date=$START_DATE&"
       shift 2 ;;
     --end-date)
       END_DATE="$2" ;
-      QUERY_STRING+="end_datetime=$END_DATE&"
+      QUERY_STRING+="end_date=$END_DATE&"
       shift 2 ;;
     --limit)
       LIMIT="$2" ;

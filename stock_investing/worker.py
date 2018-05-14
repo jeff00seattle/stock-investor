@@ -11,6 +11,7 @@ import datetime as dt
 import hashlib
 from pymemcache.client import base
 import ujson as json
+import requests
 
 import pandas as pd
 pd.set_option('display.float_format', lambda x: '%.4f' % x)
@@ -50,7 +51,7 @@ class StockInvestorTask(object):
     """ENUM
     """
     UNDEFINED = None
-    AVERAGE_MONTHLY = "avg-monthly"
+    AVERAGE_MONTHLY_OPEN_CLOSE = "avg-monthly"
     MAX_DAILY_PROFIT = "max-daily-profit"
     BUSY_DAY = "busy-day"
     BIGGEST_LOSER = "biggest-loser"
@@ -397,7 +398,7 @@ class StockInvestor(object):
 
             self.stock_dataframe()
 
-            if self.task == StockInvestorTask.AVERAGE_MONTHLY:
+            if self.task == StockInvestorTask.AVERAGE_MONTHLY_OPEN_CLOSE:
                 result = self.task_average_monthly_open_close()
             elif self.task == StockInvestorTask.MAX_DAILY_PROFIT:
                 result = self.task_max_daily_profit()
@@ -516,8 +517,24 @@ class StockInvestor(object):
                     request_headers=request_headers,
                     request_label=_request_label
                 )
+            except requests.exceptions.RetryError as ex:
+                self.logger.warning(
+                    "Request Error",
+                    extra={
+                        "request_url": request_url,
+                        "error": get_exception_message(ex)
+                    }
+                )
+                continue
+
             except Exception as ex:
-                print_traceback(ex)
+                self.logger.error(
+                    "Request Error",
+                    extra={
+                        "request_url": request_url,
+                        "error": get_exception_message(ex)
+                    }
+                )
                 raise
 
             return response
@@ -539,6 +556,7 @@ class StockInvestor(object):
         self.df = self.df.sort_values(by=["Stock", "Date"])
 
     def task_average_monthly_open_close(self):
+        """Average Monthly Open and Close"""
         average_monthly_open_close = {}
         for stock in self.stocks:
             average_monthly_open_close_stock = self.task_average_monthly_open_close_by_stock(stock)
@@ -547,18 +565,14 @@ class StockInvestor(object):
         return average_monthly_open_close
 
     def task_average_monthly_open_close_by_stock(self, stock):
-        df = copy.copy(self.df)
+        """Average Monthly Open and Close by Stock"""
+        df = self.df.copy()
 
-        stock_filter = df['Stock'] == stock
-        df_slice = df[stock_filter]
+        criteria_stock = (df['Stock'] == stock)
+        df_stock = df.copy()[criteria_stock]
 
-        # https://maxpowerwastaken.github.io/blog/pandas_view_vs_copy/
-        dfColumnYearMonth = pd.to_datetime(df_slice['Date']).map(lambda dt: dt.strftime("%Y-%m"))
-        # for index in list(dfColumnYearMonth.index.values):
-        #     df_slice.loc[index, 'YearMonth'] = dfColumnYearMonth.loc[index]
-
-        df_slice.loc[:, 'YearMonth'] = dfColumnYearMonth
-        df_mean = df_slice.groupby(['Stock', 'YearMonth'], as_index=False)['Open', 'Close'].mean()
+        df_stock['YearMonth'] = pd.to_datetime(df_stock['Date']).map(lambda dt: dt.strftime("%Y-%m"))
+        df_mean = df_stock.groupby(['Stock', 'YearMonth'], as_index=False)['Open', 'Close'].mean()
 
         average_monthly_open_close = {}
         average_monthly_open_close[stock] = []
@@ -577,7 +591,7 @@ class StockInvestor(object):
         return average_monthly_open_close
 
     def task_max_daily_profit(self):
-        df = copy.copy(self.df)
+        df = self.df.copy()
 
         df['Profit'] = df['High'] - df['Low']
 
@@ -590,14 +604,19 @@ class StockInvestor(object):
     def task_max_daily_profit_by_stock(self, df, stock):
         df = copy.copy(df)
 
-        stock_filter = df['Stock'] == stock
-        df_slice = df[stock_filter]
+        criteria_stock = (df['Stock'] == stock)
+        df_stock = df.copy()[criteria_stock]
 
-        df_slice_json = json.loads(df_slice.ix[df_slice['Profit'].idxmax()][['Stock', 'Date', 'Profit']].to_json())
+        df_slice_json = json.loads(df_stock.ix[df_stock['Profit'].idxmax()][['Stock', 'Date', 'Profit']].to_json())
 
         return df_slice_json
 
     def task_busy_day(self):
+        # We’d like to know which days generated unusually high activity for our securities.
+        # Please display the ticker symbol, date, and volume for each day where the volume was more than 10% higher
+        # than the security’s average volume (Note: You’ll need to calculate the average volume, and should display
+        # that somewhere too).
+
         busy_day = []
         for stock in self.stocks:
             busy_day.append(self.task_busy_day_by_stock(stock))
@@ -605,30 +624,35 @@ class StockInvestor(object):
         return busy_day
 
     def task_busy_day_by_stock(self, stock):
-        df = copy.copy(self.df)
+        df = self.df.copy()
 
-        stock_filter = df['Stock'] == stock
-        df_slice = df[stock_filter]
-        df_slice['Volume Mean'] = df_slice['Volume'].mean()
+        criteria_stock = (df['Stock'] == stock)
+        # criteria_row_indices = df[criteria_stock].index
+        # df_stock = df.copy().loc[criteria_row_indices, :]
+        df_stock = df.copy()[criteria_stock]
 
-        dfColumnVolumeHigh = ((df_slice['Volume'] - df_slice['Volume Mean'])/ df_slice['Volume Mean']) * 100
-        df_slice['Volume High'] = dfColumnVolumeHigh
-        stock_slice_VH = df_slice['Volume High'] >= 10
+        df_stock['Volume Mean'] = df_stock['Volume'].mean()
 
-        df_slice_json = json.loads(df_slice[stock_slice_VH][['Stock', 'Date', 'Volume Mean', 'Volume High']].to_json())
+        dfColumnVolumeHigh = ((df_stock['Volume'] - df_stock['Volume Mean'])/ df_stock['Volume Mean']) * 100
+        df_stock['Volume High'] = dfColumnVolumeHigh
+        stock_slice_VH = df_stock['Volume High'] > 10
+
+        df_slice_json = json.loads(df_stock[stock_slice_VH][['Stock', 'Date', 'Volume', 'Volume Mean']].to_json())
         busy_day = {}
         busy_day[stock] = []
 
         for key, date in df_slice_json['Date'].items():
-            volume_high = df_slice_json['Volume High'][key]
+            volume = df_slice_json['Volume'][key]
             volume_mean = df_slice_json['Volume Mean'][key]
 
             volume_entry = {
                 'date': date,
-                'volume_high': volume_high,
+                'volume': volume,
                 'volume_mean': volume_mean
             }
             busy_day[stock] += [volume_entry]
+
+        # pprint(df_stock[['Stock', 'Date', 'Volume', 'Volume Mean', 'Volume High']])
 
         return busy_day
 
@@ -654,9 +678,9 @@ class StockInvestor(object):
     def task_biggest_loser_by_stock(self, stock):
         pd.set_option('display.float_format', lambda x: '%.4f' % x)
 
-        df = copy.copy(self.df)
-        stock_filter = df['Stock'] == stock
-        df_slice = df[stock_filter]
+        df = self.df.copy()
+        criteria_stock = (df['Stock'] == stock)
+        df_slice = df[criteria_stock]
         number_of_lose_days = df_slice[(df_slice['Close'] < df_slice['Open'])].count()[1]
 
         return {stock: number_of_lose_days}
@@ -676,7 +700,7 @@ def main():
        [--stocks=Stock,Stock,Stock]
        [--start-date='YYYY-MM-DD'] 
        [--end-date='YYYY-MM-DD'] 
-       [--help | --avg-monthly | --max-daily-profit | --busy-day | --biggest-loser]
+       [--help | --avg-monthly-open-close | --max-daily-profit | --busy-day | --biggest-loser]
     -v | --verbose: Provide verbose details
     -h | --help: Usage
     --api-key: Quandl WIKI API Key [Required]
@@ -690,7 +714,10 @@ def main():
     """).format(sys.argv[0], yesterday_date_default, yesterday_date_default, str(stock_symbols_default))
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hv", ["help", "verbose", "api-key=", "stocks=", "start-date=", "end-date=", "avg-monthly", "max-daily-profit", "busy-day", "biggest-loser"])
+        opts, args = getopt.getopt(
+            sys.argv[1:],
+            "hv",
+            ["help", "verbose", "api-key=", "stocks=", "start-date=", "end-date=", "avg-monthly-open-close", "max-daily-profit", "busy-day", "biggest-loser"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err) # will print something like "option -a not recognized"
@@ -712,6 +739,8 @@ def main():
             kv["end-date"] = val
         elif opt in ("--stocks"):
             kv["stocks"] = val.split(",")
+        elif opt in ("--avg-monthly-open-close"):
+            kv["task"] = StockInvestorTask.AVERAGE_MONTHLY_OPEN_CLOSE
         elif opt in ("--max-daily-profit"):
             kv["task"] = StockInvestorTask.MAX_DAILY_PROFIT
         elif opt in ("--busy-day"):
@@ -719,7 +748,7 @@ def main():
         elif opt in ("--biggest-loser"):
             kv["task"] = StockInvestorTask.BIGGEST_LOSER
         else:
-            kv["task"] = StockInvestorTask.AVERAGE_MONTHLY
+            kv["task"] = StockInvestorTask.AVERAGE_MONTHLY_OPEN_CLOSE
 
     if "api-key" not in kv:
         print("%s: Provide --api-key" % sys.argv[0])

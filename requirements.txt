@@ -1,4 +1,4 @@
 logging-fortified>=0.1.0
+requests
 requests-fortified>=0.3.0
 pandas
-pymemcache

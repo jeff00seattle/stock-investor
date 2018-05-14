@@ -1,7 +1,7 @@
 # stock-investor
 Coding challenge
-Version: Saturday, May 12, 2018 (PDT) 14:00
-    
+Version: Sunday, May 13, 2018 (PDT) 23:30
+
 ---
 
   * [Capital One Investing Coding Test Instructions](#capital-one-investing-coding-test-instructions)
@@ -26,7 +26,7 @@ Version: Saturday, May 12, 2018 (PDT) 14:00
       - [Python3 Run](#python3-run-2)
     + [```--busy-day```](#-----busy-day---)
       - [Python3 Run](#python3-run-3)
-    
+
 ---
 
 ## Capital One Investing Coding Test Instructions
@@ -183,14 +183,6 @@ OK
 
 ### Development Issues
 
-#### Panda Warning: ```SettingWithCopyWarning```
-
-```bash
-/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pandas/core/indexing.py:357: SettingWithCopyWarning:
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
-```
-
 #### What is Required Next
 
 + More comments in the code
@@ -234,7 +226,7 @@ Usage: stock_investing/worker.py
     --biggest-loser: Which stock had the most days where the closing price was lower than the opening price.
  ```
 
-### ```--avg-monthly```
+### ```--avg-monthly-open-close```
 
 #### Python3 Run
 ```bash
@@ -342,14 +334,6 @@ python3 stock_investing/worker.py \
 }
 ```
 
-#### Known Issues: Python Pandas Warning: ```SettingWithCopyWarning```
-
-```bash
-/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pandas/core/indexing.py:357: SettingWithCopyWarning:
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
-```
-
 ### ```--max-daily-profit```
 
 #### Python3 Run
@@ -372,6 +356,9 @@ python3 stock_investing/worker.py \
 
 ### ```--biggest-loser```
 
+Which security had the most days where the closing price was lower than the
+opening price. Please display the ticker symbol and the number of days that security’s closing
+price was lower than that day’s opening price.
 
 #### Python3 Run
 
@@ -388,6 +375,11 @@ $ python3 stock_investing/worker.py \
 ```
 
 ### ```--busy-day```
+
+We’d like to know which days generated unusually high activity for our securities.
+Please display the ticker symbol, date, and volume for each day where the volume was more than 10% higher
+than the security’s average volume (Note: You’ll need to calculate the average volume, and should display
+that somewhere too).
 
 #### Python3 Run
 

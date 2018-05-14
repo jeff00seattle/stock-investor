@@ -9,7 +9,6 @@ import getopt
 import queue
 import datetime as dt
 import hashlib
-from pymemcache.client import base
 import ujson as json
 import requests
 
@@ -33,6 +32,10 @@ from requests_fortified.support import (
 from requests_fortified import RequestsFortifiedDownload
 
 try:
+    from support.cache_client import StockCache
+except ImportError:
+    from .support.cache_client import StockCache
+try:
     from support.month_day_range import month_day_range
 except ImportError:
     from .support.month_day_range import month_day_range
@@ -41,9 +44,9 @@ try:
 except ImportError:
     from .support.month_list import month_list
 try:
-    from errors.errors_traceback import print_traceback
+    from support.errors_traceback import print_traceback
 except ImportError:
-    from .errors.errors_traceback import print_traceback
+    from .support.errors_traceback import print_traceback
 
 SECONDS_FOR_60_MINUTES = 3600
 
@@ -55,58 +58,6 @@ class StockInvestorTask(object):
     MAX_DAILY_PROFIT = "max-daily-profit"
     BUSY_DAY = "busy-day"
     BIGGEST_LOSER = "biggest-loser"
-
-
-class StockCache(object):
-    """StockCache
-    With the expectation the external handling of caching needs will be `memcached`.
-    """
-
-    @property
-    def cache_client(self):
-        return self.__cache_client
-    @cache_client.setter
-    def cache_client(self, value):
-        self.__cache_client = value
-
-    def __init__(self):
-        # Run `memcached` before running this next line:
-        self.cache_client = base.Client(('localhost', 11211))
-
-    @staticmethod
-    def cache_value_serialize(cache_value):
-        try:
-            if isinstance(cache_value, dict):
-                external_cache_value = json.dumps(cache_value, double_precision=4, sort_keys=True)
-            elif isinstance(cache_value, list):
-                external_cache_value = json.dumps(cache_value, double_precision=4)
-            else:
-                external_cache_value = cache_value
-        except TypeError:
-            raise
-        except Exception:
-            raise
-
-        return external_cache_value
-
-    @staticmethod
-    def cache_value_deserialize(cache_value):
-        try:
-            cache_value = json.loads(cache_value)
-        except ValueError as json_decode_ex:
-            if isinstance(cache_value, str):
-                cache_value = cache_value
-            elif isinstance(cache_value, bytes):
-                cache_value = cache_value.decode("utf-8")
-            else:
-                raise Exception(
-                    error_message=get_exception_message(json_decode_ex),
-                    errors=json_decode_ex
-                )
-        except Exception:
-            raise
-
-        return cache_value
 
 
 class StockInvestorTaskBase(object):
@@ -502,7 +453,7 @@ class StockInvestor(object):
         while True:
             tries += 1
             if tries > 1:
-                _request_label = f'{request_label}: Attempt {tries}'
+                _request_label = "{0}: Attempt {1}".format(request_label, tries)
             else:
                 _request_label = request_label
 
@@ -707,7 +658,7 @@ def main():
     --start-date: 'YYYY-MM-DD' Default: '{1}'
     --end-date: 'YYYY-MM-DD' Default: '{2}'
     --stocks: List of WIKI Stock Symbols [Required] Default: {3}
-    --avg-monthly: Average Monthly Open and Close prices for each stock. Default.
+    --avg-monthly-open-close: Average Monthly Open and Close prices for each stock. Default.
     --max-daily-profit: Which day provided the highest amount of profit for each stock.
     --busy-day: Which days generated unusually high activity for each stock.
     --biggest-loser: Which stock had the most days where the closing price was lower than the opening price.

@@ -19,20 +19,34 @@ clean:
 	@rm -fR tmp
 	@rm -fR *.zip
 
-requirements: $(REQ_FILE)
+install-pip:
+	@echo "======================================================"
+	@echo install-pip
+	@echo "======================================================"
+	$(PYTHON3) tools/get-pip.py
+	$(PYTHON3) -m pip install --upgrade pip
+
+install-freeze:
+	@echo "======================================================"
+	@echo install-freeze
+	@echo "======================================================"
+	$(PYTHON3) -m pip install --upgrade pip
+	$(PYTHON3) -m pip freeze
+
+install-requirements: $(REQ_FILE)
 	@echo "======================================================"
 	@echo requirements $(PACKAGE_PREFIX)
 	@echo "======================================================"
 	$(PYTHON3) -m pip install --upgrade pip
 	$(PYTHON3) -m pip install --upgrade -r $(REQ_FILE)
 
-tools-requirements: $(TOOLS_REQ_FILE)
+install-tools-requirements: $(TOOLS_REQ_FILE)
 	@echo "======================================================"
 	@echo tools-requirements $(PACKAGE_PREFIX)
 	@echo "======================================================"
 	$(PYTHON3) -m pip install --upgrade -r $(TOOLS_REQ_FILE)
 
-pyflakes: tools-requirements
+pyflakes: install-tools-requirements
 	@echo "======================================================"
 	@echo pyflakes $(PACKAGE_PREFIX)
 	@echo "======================================================"

@@ -5,7 +5,6 @@
 import sys
 import traceback
 
-
 def get_exception_message(ex):
     """Build exception message with details.
     """

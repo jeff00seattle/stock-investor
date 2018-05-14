@@ -31,7 +31,11 @@ install-freeze:
 	@echo install-freeze
 	@echo "======================================================"
 	$(PYTHON3) -m pip install --upgrade pip
-	$(PYTHON3) -m pip freeze
+	$(PYTHON3) -m pip freeze | grep pyfortified-logging
+	$(PYTHON3) -m pip freeze | grep pyfortified-requests
+	$(PYTHON3) -m pip freeze | grep pymemcache-client
+	$(PYTHON3) -m pip freeze | grep ujson
+	$(PYTHON3) -m pip freeze | grep pandas
 
 install-requirements: $(REQ_FILE)
 	@echo "======================================================"

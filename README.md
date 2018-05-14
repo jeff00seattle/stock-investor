@@ -141,7 +141,12 @@ $cd ./stock_investing.sh \
 ## Development
 
 ### Python
-This application was built within my Python environment version 3.6.5.
+This application was built within my Python environment version **3.5.4**:
+
+```bash
+$ python3 --version
+Python 3.5.4
+```
 
 Two Python projects that I  have on PyPi and currently actively developing, however, I have not made sources public yet, where used with this coding challenge:
 + pyfortified-logging: https://pypi.org/project/pyfortified-logging

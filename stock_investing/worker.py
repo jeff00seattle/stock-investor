@@ -20,16 +20,16 @@ from concurrent import futures
 from urllib.parse import unquote as urldecode
 
 ### The following is my own code libraries shared on Pypi for Logging.
-from logging_fortified import (get_logger, LoggingFormat, LoggingOutput)
-from requests_fortified.errors import (
+from pyfortified_logging import (get_logger, LoggingFormat, LoggingOutput)
+from pyfortified_requests.errors import (
     get_exception_message,
 )
 
 ### The following is my own code libraries shared on Pypi for Requests.
-from requests_fortified.support import (
+from pyfortified_requests.support import (
     base_class_name,
     HEADER_CONTENT_TYPE_APP_JSON,)
-from requests_fortified import RequestsFortifiedDownload
+from pyfortified_requests import RequestsFortifiedDownload
 
 try:
     from support.cache_client import StockCache

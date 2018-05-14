@@ -1,6 +1,6 @@
 # stock-investor
 Coding challenge
-Version: Monday, May 14, 2018 (PDT) 08:00
+Version: Monday, May 14, 2018 (PDT) 11:00
 
 ---
 
@@ -144,8 +144,8 @@ $cd ./stock_investing.sh \
 This application was built within my Python environment version 3.6.5.
 
 Two Python projects that I  have on PyPi and currently actively developing, however, I have not made sources public yet, where used with this coding challenge:
-+ https://pypi.org/project/logging-fortified/
-+ https://pypi.org/project/requests-fortified/
++ pyfortified-logging: https://pypi.org/project/pyfortified-logging
++ pyhttpstatus-utils: https://pypi.python.org/pypi/pyhttpstatus-utils
 
 ### Asynchrous Execution
 
@@ -213,14 +213,14 @@ Usage: stock_investing/worker.py
        [--stocks=Stock,Stock,Stock]
        [--start-date='YYYY-MM-DD']
        [--end-date='YYYY-MM-DD']
-       [--help | --avg-monthly | --max-daily-profit | --busy-day | --biggest-loser]
+       [--help | --avg-monthly-open-close | --max-daily-profit | --busy-day | --biggest-loser]
     -v | --verbose: Provide verbose details
     -h | --help: Usage
     --api-key: Quandl WIKI API Key [Required]
-    --start-date: 'YYYY-MM-DD' Default: '2018-05-11'
-    --end-date: 'YYYY-MM-DD' Default: '2018-05-11'
+    --start-date: 'YYYY-MM-DD' Default: '2018-05-13'
+    --end-date: 'YYYY-MM-DD' Default: '2018-05-13'
     --stocks: List of WIKI Stock Symbols [Required] Default: ['COF', 'GOOGL', 'MSFT']
-    --avg-monthly: Average Monthly Open and Close prices for each stock. Default.
+    --avg-monthly-open-close: Average Monthly Open and Close prices for each stock. Default.
     --max-daily-profit: Which day provided the highest amount of profit for each stock.
     --busy-day: Which days generated unusually high activity for each stock.
     --biggest-loser: Which stock had the most days where the closing price was lower than the opening price.

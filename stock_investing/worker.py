@@ -19,22 +19,21 @@ import logging
 from concurrent import futures
 from urllib.parse import unquote as urldecode
 
-### The following is my own code libraries shared on Pypi for Logging.
+### pyfortified_cache -- I had contributed to this Python code project.
+from pyfortified_cache import (CacheClient, create_cache_key)
+
+### pyfortified_logging -- I had contributed to this Python code project.
 from pyfortified_logging import (get_logger, LoggingFormat, LoggingOutput)
 from pyfortified_requests.errors import (
     get_exception_message,
 )
 
-### The following is my own code libraries shared on Pypi for Requests.
+### pyfortified_requests -- I had contributed to this Python code project.
 from pyfortified_requests.support import (
     base_class_name,
     HEADER_CONTENT_TYPE_APP_JSON,)
 from pyfortified_requests import RequestsFortifiedDownload
 
-try:
-    from support.cache_client import StockCache
-except ImportError:
-    from .support.cache_client import StockCache
 try:
     from support.month_day_range import month_day_range
 except ImportError:
@@ -49,6 +48,7 @@ except ImportError:
     from .support.errors_traceback import print_traceback
 
 SECONDS_FOR_60_MINUTES = 3600
+URL_QUANDL_WIKI_TMPL = "https://www.quandl.com/api/v3/datasets/WIKI/{0}/data.json"
 
 class StockInvestorTask(object):
     """ENUM
@@ -64,11 +64,29 @@ class StockInvestorTaskBase(object):
     """StockInvestorTaskBase
     Base handler of content for processed Tasks
     """
-    def __init__(self, security, start_date, end_date):
-        self.__stock = security
+    __api_key = None
+    __stock = None
+    __start_date = None
+    __end_date = None
+    __cache_key = None
+
+    def __init__(self, api_key, stock, start_date, end_date):
+        assert api_key
+        assert stock
+        assert start_date
+        assert end_date
+
+        self.__api_key = api_key
+        self.__stock = stock
         self.__start_date = start_date
         self.__end_date = end_date
 
+    @property
+    def request_url(self):
+        return URL_QUANDL_WIKI_TMPL.format(self.stock)
+    @property
+    def api_key(self):
+        return self.__api_key
     @property
     def stock(self):
         return self.__stock
@@ -88,37 +106,37 @@ class StockInvestorTaskBase(object):
         )
 
     @property
-    def cache_data_key(self):
-        return self.cache_key("data")
+    def request_params(self):
+        return {
+            "api_key": self.api_key,
+            "start_date": self.start_date,
+            "end_date": self.end_date,
+            "order": "asc",
+        }
 
-    @property
-    def cache_columns_key(self):
-        return self.cache_key("columns")
-
-    def cache_key(self, salt):
-        cache_key_tag = "{}{}{}{}".format(
-            self.stock,
-            self.start_date,
-            self.end_date,
-            salt
-        ).encode('utf-8')
-        return str(int(hashlib.md5(cache_key_tag).hexdigest(), 16))
+    def cache_key(self, cache_group_name):
+        return create_cache_key(
+            request_params=self.request_params,
+            request_url=self.request_url,
+            cache_group_name=cache_group_name,
+            client_unique_hash=None
+        )
 
 
 class StockInvestorRequest(StockInvestorTaskBase):
     """StockInvestorRequest
     Base handler of content for processed Task requests.
     """
-    def __init__(self, stock, start_date, end_date):
-        super(StockInvestorRequest, self).__init__(stock, start_date, end_date)
+    def __init__(self, api_key, stock, start_date, end_date):
+        super(StockInvestorRequest, self).__init__(api_key, stock, start_date, end_date)
 
 
 class StockInvestorResponse(StockInvestorTaskBase):
     """StockInvestorResponse
     Base handler of content for processed Task responses.
     """
-    def __init__(self, stock, start_date, end_date, columns, data):
-        super(StockInvestorResponse, self).__init__(stock, start_date, end_date)
+    def __init__(self, api_key, stock, start_date, end_date, columns, data):
+        super(StockInvestorResponse, self).__init__(api_key, stock, start_date, end_date)
         self.__columns = columns
         self.__data = data
 
@@ -150,8 +168,6 @@ class StockInvestor(object):
     """
     __NAME = "Stock Investor"
     __VERSION = "0.0.1"
-
-    _URL_QUANDL_WIKI_TMPL = "https://www.quandl.com/api/v3/datasets/WIKI/{0}/data.json"
 
     _MAX_WORKERS = 10
 
@@ -192,7 +208,7 @@ class StockInvestor(object):
 
     @property
     def cache(self):
-        return self.__cache.cache_client
+        return self.__cache
     @cache.setter
     def cache(self, value):
         self.__cache = value
@@ -230,7 +246,7 @@ class StockInvestor(object):
         assert self.end_datetime
         assert self.stocks
 
-        self.cache = StockCache()
+        self.cache = CacheClient(cache_name="stock-investor")
 
         self.run_start_time = dt.datetime.now()
 
@@ -283,6 +299,7 @@ class StockInvestor(object):
                 month_end_datetime = self.end_datetime
             for stock in self.stocks:
                 worker_task = StockInvestorRequest(
+                    api_key=self.api_key,
                     stock=stock,
                     start_date=month_start_datetime.strftime("%Y-%m-%d"),
                     end_date=month_end_datetime.strftime("%Y-%m-%d")
@@ -315,16 +332,18 @@ class StockInvestor(object):
                     wreq = self.__worker_queue.get()
 
                     self.logger.debug("cache: pre-get: {}".format(wreq.str))
-                    wresp_data_serialized = self.cache.get(wreq.cache_data_key)
-                    wresp_columns_serialized = self.cache.get(wreq.cache_columns_key)
+                    wresp_data, data_cache_key = self.cache.get(request_url=wreq.request_url, request_params=wreq.request_params, cache_group_name="data")
+                    wresp_columns, columns_cache_key = self.cache.get(request_url=wreq.request_url, request_params=wreq.request_params, cache_group_name="columns")
 
-                    if wresp_data_serialized is not None:
-                        wresp_data = StockCache.cache_value_deserialize(wresp_data_serialized)
-                        wresp_columns = StockCache.cache_value_deserialize(wresp_columns_serialized)
+                    if wresp_data is not None:
                         self.logger.debug("cache: hit: {}".format(wreq.str))
+
                         self.stocks_data[wreq.stock]["data"] += wresp_data
                         self.stocks_data[wreq.stock]["columns"] = wresp_columns
                         continue
+
+                    assert data_cache_key == wreq.cache_key(cache_group_name="data")
+                    assert columns_cache_key == wreq.cache_key(cache_group_name="columns")
 
                     self.logger.debug("cache: miss: {}".format(wreq))
                     future = executor.submit(self.work_process, wreq)
@@ -341,11 +360,11 @@ class StockInvestor(object):
 
                         self.logger.debug("cache: pre-set: {}".format(wresp.str))
 
-                        wresp_data_serialized = StockCache.cache_value_serialize(wresp.data)
-                        self.cache.set(wresp.cache_data_key, wresp_data_serialized)
+                        data_cache_key = wresp.cache_key(cache_group_name="data")
+                        self.cache.put(cache_key=data_cache_key, cache_value=wresp.data)
 
-                        wresp_columns_serialized = StockCache.cache_value_serialize(wresp.columns)
-                        self.cache.set(wresp.cache_columns_key, wresp_columns_serialized)
+                        columns_cache_key = wresp.cache_key(cache_group_name="columns")
+                        self.cache.put(columns_cache_key, wresp.columns)
 
             self.stock_dataframe()
 
@@ -382,7 +401,7 @@ class StockInvestor(object):
             "order": "asc",
         }
 
-        request_url = self._URL_QUANDL_WIKI_TMPL.format(wreq.stock)
+        request_url = URL_QUANDL_WIKI_TMPL.format(wreq.stock)
         try:
             response = self.worker_request(
                 request_method="GET",
@@ -406,6 +425,7 @@ class StockInvestor(object):
         dataset_data = json_data['dataset_data']['data']
 
         wresp = StockInvestorResponse(
+            api_key=self.api_key,
             stock=wreq.stock,
             start_date=wreq.start_date,
             end_date=wreq.end_date,
@@ -534,8 +554,8 @@ class StockInvestor(object):
 
             average_entry = {
                 'month': month,
-                'average_open': average_open,
-                'average_close': average_close
+                'average_open': round(average_open, 2),
+                'average_close': round(average_close, 2)
             }
             average_monthly_open_close[stock] += [average_entry]
 
@@ -546,21 +566,24 @@ class StockInvestor(object):
 
         df['Profit'] = df['High'] - df['Low']
 
-        max_daily_profit = []
+        max_daily_profit = {}
         for stock in self.stocks:
-            max_daily_profit.append(self.task_max_daily_profit_by_stock(df, stock))
+            max_daily_profit.update(self.task_max_daily_profit_by_stock(df, stock))
 
         return max_daily_profit
 
     def task_max_daily_profit_by_stock(self, df, stock):
         df = copy.copy(df)
 
+        max_daily_profit = {}
+        max_daily_profit[stock] = {}
+
         criteria_stock = (df['Stock'] == stock)
         df_stock = df.copy()[criteria_stock]
 
-        df_slice_json = json.loads(df_stock.ix[df_stock['Profit'].idxmax()][['Stock', 'Date', 'Profit']].to_json())
+        max_daily_profit[stock] = json.loads(df_stock.ix[df_stock['Profit'].idxmax()][['Date', 'Profit']].to_json())
 
-        return df_slice_json
+        return max_daily_profit
 
     def task_busy_day(self):
         # We’d like to know which days generated unusually high activity for our securities.
@@ -568,9 +591,9 @@ class StockInvestor(object):
         # than the security’s average volume (Note: You’ll need to calculate the average volume, and should display
         # that somewhere too).
 
-        busy_day = []
+        busy_day = {}
         for stock in self.stocks:
-            busy_day.append(self.task_busy_day_by_stock(stock))
+            busy_day.update(self.task_busy_day_by_stock(stock))
 
         return busy_day
 
@@ -598,8 +621,8 @@ class StockInvestor(object):
 
             volume_entry = {
                 'date': date,
-                'volume': volume,
-                'volume_mean': volume_mean
+                'volume': int(volume),
+                'volume_mean': int(volume_mean)
             }
             busy_day[stock] += [volume_entry]
 
@@ -750,6 +773,7 @@ def main():
 
     worker_class = StockInvestor(kv)
     result = worker_class.work()
+
     pprint(result)
 
 if __name__ == "__main__":

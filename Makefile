@@ -19,6 +19,25 @@ clean:
 	@rm -fR tmp
 	@rm -fR *.zip
 
+install-memcached:
+	@echo "======================================================"
+	@echo install-memcached
+	@echo "======================================================"
+	brew update
+	brew install memcached
+
+upgrade-memcached:
+	@echo "======================================================"
+	@echo upgrade-memcached
+	@echo "======================================================"
+	@brew upgrade memcached
+
+flush-memcached:
+	@echo "======================================================"
+	@echo flush-memcached
+	@echo "======================================================"
+	@echo 'flush_all' | nc localhost 11211
+
 install-pip:
 	@echo "======================================================"
 	@echo install-pip
@@ -31,6 +50,7 @@ install-freeze:
 	@echo install-freeze
 	@echo "======================================================"
 	$(PYTHON3) -m pip install --upgrade pip
+	$(PYTHON3) -m pip freeze | grep pyfortified-cache
 	$(PYTHON3) -m pip freeze | grep pyfortified-logging
 	$(PYTHON3) -m pip freeze | grep pyfortified-requests
 	$(PYTHON3) -m pip freeze | grep pymemcache-client

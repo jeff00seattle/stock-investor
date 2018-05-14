@@ -1,4 +1,8 @@
-logging-fortified>=0.1.0
+logging-fortified>=0.1.5
+pandas
+pprintpp
+pymemcache-client>=0.3.2
+pymemcache>=1.4.4
 requests
 requests-fortified>=0.3.0
-pandas
+ujson>=1.35

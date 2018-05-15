@@ -3,8 +3,6 @@
 #
 
 import datetime as dt
-
-# requires python-dateutil (http://labix.org/python-dateutil)
 from dateutil.relativedelta import relativedelta
 
 def month_day_range(month_datetime):

@@ -167,7 +167,7 @@ class StockInvestor(object):
         a multithreaded asynchronous manner.
     """
     __NAME = "Stock Investor"
-    __VERSION = "0.0.1"
+    __VERSION = "0.1.0"
 
     _MAX_WORKERS = 10
 

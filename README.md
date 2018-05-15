@@ -228,6 +228,12 @@ OK
 $ make install
 ```
 
+To run application using Makefile, perform the following and add API Key to environment:
+
+```bash
+$ export QUANDL_WIKI_API_KEY=[REDACTED]
+```
+
 ### ```--help```
 
 ```bash
@@ -260,102 +266,40 @@ python3 stock_investing/worker.py \
   --api-key '[REDACTED]' \
   --start-date '2017-01-01' \
   --end-date '2017-06-30' \
-  --avg-monthly
+  --avg-monthly-open-close
 ```
 
+#### Makefile Run
+```bash
+$ make run-example-avg-monthly-open-close
+```
+
+#### Response
 ```json
 {
     'COF': [
-        {'average_close': 88.26, 'average_open': 88.2985, 'month': '2017-01'},
-        {
-            'average_close': 90.19578947368421,
-            'average_open': 89.85263157894737,
-            'month': '2017-02',
-        },
-        {
-            'average_close': 88.92521739130437,
-            'average_open': 89.26782608695652,
-            'month': '2017-03',
-        },
-        {
-            'average_close': 83.23526315789472,
-            'average_open': 83.41105263157895,
-            'month': '2017-04',
-        },
-        {
-            'average_close': 80.50863636363636,
-            'average_open': 80.64818181818183,
-            'month': '2017-05',
-        },
-        {
-            'average_close': 80.32818181818183,
-            'average_open': 80.09818181818181,
-            'month': '2017-06',
-        },
+        {'average_close': 88.26, 'average_open': 88.3, 'month': '2017-01'},
+        {'average_close': 90.2, 'average_open': 89.85, 'month': '2017-02'},
+        {'average_close': 88.93, 'average_open': 89.27, 'month': '2017-03'},
+        {'average_close': 83.24, 'average_open': 83.41, 'month': '2017-04'},
+        {'average_close': 80.51, 'average_open': 80.65, 'month': '2017-05'},
+        {'average_close': 80.33, 'average_open': 80.1, 'month': '2017-06'},
     ],
     'GOOGL': [
-        {
-            'average_close': 830.2495000000001,
-            'average_open': 829.8539999999997,
-            'month': '2017-01',
-        },
-        {
-            'average_close': 836.7547368421052,
-            'average_open': 836.1510526315789,
-            'month': '2017-02',
-        },
-        {
-            'average_close': 853.7897826086955,
-            'average_open': 853.8582608695652,
-            'month': '2017-03',
-        },
-        {
-            'average_close': 861.3776315789474,
-            'average_open': 860.0765789473684,
-            'month': '2017-04',
-        },
-        {
-            'average_close': 961.6545454545453,
-            'average_open': 959.595909090909,
-            'month': '2017-05',
-        },
-        {
-            'average_close': 973.3727272727272,
-            'average_open': 975.781818181818,
-            'month': '2017-06',
-        },
+        {'average_close': 830.25, 'average_open': 829.85, 'month': '2017-01'},
+        {'average_close': 836.75, 'average_open': 836.15, 'month': '2017-02'},
+        {'average_close': 853.79, 'average_open': 853.86, 'month': '2017-03'},
+        {'average_close': 861.38, 'average_open': 860.08, 'month': '2017-04'},
+        {'average_close': 961.65, 'average_open': 959.6, 'month': '2017-05'},
+        {'average_close': 973.37, 'average_open': 975.78, 'month': '2017-06'},
     ],
     'MSFT': [
-        {
-            'average_close': 63.19200000000001,
-            'average_open': 63.185500000000005,
-            'month': '2017-01',
-        },
-        {
-            'average_close': 64.1136842105263,
-            'average_open': 64.13447368421052,
-            'month': '2017-02',
-        },
-        {
-            'average_close': 64.84130434782608,
-            'average_open': 64.76434782608695,
-            'month': '2017-03',
-        },
-        {
-            'average_close': 66.17157894736842,
-            'average_open': 66.23894736842107,
-            'month': '2017-04',
-        },
-        {
-            'average_close': 68.91772727272729,
-            'average_open': 68.82818181818182,
-            'month': '2017-05',
-        },
-        {
-            'average_close': 70.51795454545454,
-            'average_open': 70.56136363636362,
-            'month': '2017-06',
-        },
+        {'average_close': 63.19, 'average_open': 63.19, 'month': '2017-01'},
+        {'average_close': 64.11, 'average_open': 64.13, 'month': '2017-02'},
+        {'average_close': 64.84, 'average_open': 64.76, 'month': '2017-03'},
+        {'average_close': 66.17, 'average_open': 66.24, 'month': '2017-04'},
+        {'average_close': 68.92, 'average_open': 68.83, 'month': '2017-05'},
+        {'average_close': 70.52, 'average_open': 70.56, 'month': '2017-06'},
     ],
 }
 ```
@@ -363,7 +307,6 @@ python3 stock_investing/worker.py \
 ### ```--max-daily-profit```
 
 #### Python3 Run
-
 ```bash
 python3 stock_investing/worker.py \
   --api-key '[REDACTED]' \
@@ -372,6 +315,12 @@ python3 stock_investing/worker.py \
   --max-daily-profit
 ```
 
+#### Makefile Run
+```bash
+$ make run-example-max-daily-profit
+```
+
+#### Response
 ```json
 {
     'COF': {'Date': '2017-03-21', 'Profit': 3.76},
@@ -387,7 +336,6 @@ opening price. Please display the ticker symbol and the number of days that secu
 price was lower than that day’s opening price.
 
 #### Python3 Run
-
 ```bash
 $ python3 stock_investing/worker.py \
   --api-key '[REDACTED]' \
@@ -396,6 +344,12 @@ $ python3 stock_investing/worker.py \
   --biggest-loser
 ```
 
+#### Makefile Run
+```bash
+$ make run-example-biggest-loser
+```
+
+#### Response
 ```json
 {'COF': 62}
 ```
@@ -408,7 +362,6 @@ than the security’s average volume (Note: You’ll need to calculate the avera
 that somewhere too).
 
 #### Python3 Run
-
 ```bash
 python3 stock_investing/worker.py \
   --api-key '[REDACTED]' \
@@ -417,6 +370,12 @@ python3 stock_investing/worker.py \
   --busy-day
 ```
 
+#### Makefile Run
+```bash
+$ make run-example-busy-day
+```
+
+#### Response
 ```json
 {
     'COF': [

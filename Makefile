@@ -4,11 +4,17 @@
 PYTHON3 := $(shell which python3)
 PYTHON3_VERSION := $(shell $(PYTHON3) --version)
 PACKAGE_PREFIX := stock_investing
+API_KEY = ${QUANDL_WIKI_API_KEY}
 
 PYFLAKES_ALL_FILES := $(shell find $(PACKAGE_PREFIX) -type f  -name '*.py' ! '(' -name '__init__.py' ')')
 
 REQ_FILE := requirements.txt
 TOOLS_REQ_FILE := requirements-tools.txt
+
+check-env:
+ifndef QUANDL_WIKI_API_KEY
+	$(error QUANDL_WIKI_API_KEY is undefined)
+endif
 
 clean:
 	@echo "======================================================"
@@ -76,6 +82,31 @@ pyflakes: install-tools-requirements
 	@echo "======================================================"
 	$(PYTHON3) -m pip install --upgrade pyflakes
 	$(PYTHON3) -m pyflakes $(PYFLAKES_ALL_FILES)
+
+
+run-example-avg-monthly-open-close: check-env
+	@echo "======================================================"
+	@echo run-example-avg-monthly-open-close
+	@echo "======================================================"
+	$(PYTHON3) stock_investing/worker.py --api-key '$(API_KEY)' --start-date '2017-01-01' --end-date '2017-06-30' --avg-monthly-open-close
+
+run-example-max-daily-profit: check-env
+	@echo "======================================================"
+	@echo run-example-max-daily-profit
+	@echo "======================================================"
+	$(PYTHON3) stock_investing/worker.py --api-key '$(API_KEY)' --start-date '2017-01-01' --end-date '2017-06-30' --max-daily-profit
+
+run-example-busy-day: check-env
+	@echo "======================================================"
+	@echo run-example-busy-day
+	@echo "======================================================"
+	$(PYTHON3) stock_investing/worker.py --api-key '$(API_KEY)' --start-date '2017-01-01' --end-date '2017-06-30' --busy-day
+
+run-example-biggest-loser: check-env
+	@echo "======================================================"
+	@echo run-example-biggest-loser
+	@echo "======================================================"
+	$(PYTHON3) stock_investing/worker.py --api-key '$(API_KEY)' --start-date '2017-01-01' --end-date '2017-06-30' --biggest-loser
 
 list:
 	cat Makefile | grep "^[a-z]" | awk '{print $$1}' | sed "s/://g" | sort

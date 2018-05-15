@@ -1,0 +1,12 @@
+language: python
+python:
+- '3.5'
+install:
+- pip install -r requirements.txt
+before_script:
+- make pyflakes
+script:
+- make run-example-avg-monthly-open-close
+- make run-example-max-daily-profit
+- make run-example-busy-day
+- make run-example-biggest-loser

@@ -8,7 +8,6 @@ import sys
 import getopt
 import queue
 import datetime as dt
-import hashlib
 import ujson as json
 import requests
 
@@ -42,10 +41,6 @@ try:
     from support.month_list import month_list
 except ImportError:
     from .support.month_list import month_list
-try:
-    from support.errors_traceback import print_traceback
-except ImportError:
-    from .support.errors_traceback import print_traceback
 
 SECONDS_FOR_60_MINUTES = 3600
 URL_QUANDL_WIKI_TMPL = "https://www.quandl.com/api/v3/datasets/WIKI/{0}/data.json"

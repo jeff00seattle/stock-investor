@@ -14,33 +14,23 @@ import requests
 import pandas as pd
 pd.set_option('display.float_format', lambda x: '%.4f' % x)
 
+import time
 import logging
 from concurrent import futures
 from urllib.parse import unquote as urldecode
+from pyhttpstatus_utils import HttpStatusCode
 
-### pyfortified_cache -- I had contributed to this Python code project.
 from pyfortified_cache import (CacheClient, create_cache_key)
+import pyfortified_dateutil
 
-### pyfortified_logging -- I had contributed to this Python code project.
 from pyfortified_logging import (get_logger, LoggingFormat, LoggingOutput)
 from pyfortified_requests.errors import (
     get_exception_message,
 )
-
-### pyfortified_requests -- I had contributed to this Python code project.
 from pyfortified_requests.support import (
     base_class_name,
     HEADER_CONTENT_TYPE_APP_JSON,)
 from pyfortified_requests import RequestsFortifiedDownload
-
-try:
-    from support.month_day_range import month_day_range
-except ImportError:
-    from .support.month_day_range import month_day_range
-try:
-    from support.month_list import month_list
-except ImportError:
-    from .support.month_list import month_list
 
 SECONDS_FOR_60_MINUTES = 3600
 URL_QUANDL_WIKI_TMPL = "https://www.quandl.com/api/v3/datasets/WIKI/{0}/data.json"
@@ -285,9 +275,9 @@ class StockInvestor(object):
         assert self.start_datetime
         assert self.end_datetime
 
-        months = month_list(self.start_datetime, self.end_datetime)
-        for month in months:
-            month_start_datetime, month_end_datetime = month_day_range(month)
+        # Month granularity
+        for month in pyfortified_dateutil.dates_months_generator(self.start_datetime, self.end_datetime):
+            month_start_datetime, month_end_datetime = pyfortified_dateutil.dates_month_first_last(month, date_format="%Y-%m")
             if self.start_datetime > month_start_datetime:
                 month_start_datetime = self.start_datetime
             if self.end_datetime < month_end_datetime:
@@ -301,6 +291,18 @@ class StockInvestor(object):
                 )
                 self.logger.debug(worker_task)
                 self.__worker_queue.put(worker_task)
+
+        # # Day granularity
+        # for day in pyfortified_dateutil.date_range_generator(self.start_datetime, self.end_datetime):
+        #     for stock in self.stocks:
+        #         worker_task = StockInvestorRequest(
+        #             api_key=self.api_key,
+        #             stock=stock,
+        #             start_date=day,
+        #             end_date=day
+        #         )
+        #         self.logger.debug(worker_task)
+        #         self.__worker_queue.put(worker_task)
 
     #
     # Worker:
@@ -361,6 +363,11 @@ class StockInvestor(object):
                         columns_cache_key = wresp.cache_key(cache_group_name="columns")
                         self.cache.put(columns_cache_key, wresp.columns)
 
+                        if not self.__worker_queue.empty():
+                            wreq = self.__worker_queue.get()
+                            future = executor.submit(self.work_process, wreq)
+                            threads.append(future)
+
             self.stock_dataframe()
 
             if self.task == StockInvestorTask.AVERAGE_MONTHLY_OPEN_CLOSE:
@@ -402,7 +409,8 @@ class StockInvestor(object):
                 request_method="GET",
                 request_url=request_url,
                 request_headers=HEADER_CONTENT_TYPE_APP_JSON,
-                request_params=request_params
+                request_params=request_params,
+                request_label="{0}:{1}:{2}".format(wreq.stock, wreq.start_date, wreq.end_date)
             )
         except Exception as ex:
             return None
@@ -478,19 +486,22 @@ class StockInvestor(object):
                     request_url=request_url,
                     request_params=request_params,
                     request_data=request_data,
-                    request_retry=request_retry,
+                    request_retry={'timeout': 10},
+                    request_retry_excps=[requests.exceptions.RetryError],
+                    request_retry_http_status_codes=[HttpStatusCode.TOO_MANY_REQUESTS],
                     request_retry_excps_func=None,
                     request_headers=request_headers,
                     request_label=_request_label
                 )
             except requests.exceptions.RetryError as ex:
                 self.logger.warning(
-                    "Request Error",
+                    "Request Retry",
                     extra={
                         "request_url": request_url,
                         "error": get_exception_message(ex)
                     }
                 )
+                time.sleep(1)  # Sleep 1 second before retry.
                 continue
 
             except Exception as ex:

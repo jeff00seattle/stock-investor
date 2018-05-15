@@ -1,7 +1,8 @@
 pandas
 pprintpp
-python-dateutil>=2.7.3
+pyhttpstatus-utils
 pyfortified-cache>=0.1.2
+pyfortified-dateutil>=0.1.1
 pyfortified-logging>=0.1.8
 pyfortified-requests>=0.3.6
 pymemcache-client>=0.3.2

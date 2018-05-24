@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#  Algorithmia Interview
+# stock-investor
 #
 
 VERBOSE=false

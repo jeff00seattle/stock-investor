@@ -1,10 +1,14 @@
 # stock-investor
-Coding challenge
-Version: Monday, May 14, 2018 (PDT) 16:30
+Version: Wednesday, May 23, 2018 (PDT) 17:30
 
 ---
 
-- [Capital One Investing Coding Test Instructions](#capital-one-investing-coding-test-instructions)
+- [Stock Investing](#stock-investing)
+  * [Sources](#sources)
+  * [Stocks](#stocks)
+  * [Date Range](#date-range)
+  * [Functionality](#functionality)
+  * [Output](#output)
 - [Investigation of WIKI API](#investigation-of-wiki-api)
 - [Development](#development)
   * [Python](#python)
@@ -23,47 +27,43 @@ Version: Monday, May 14, 2018 (PDT) 16:30
   * [```--help```](#-----help---)
   * [```--avg-monthly-open-close```](#-----avg-monthly-open-close---)
     + [Python3 Run](#python3-run)
+    + [Makefile Run](#makefile-run)
+    + [Response](#response)
   * [```--max-daily-profit```](#-----max-daily-profit---)
     + [Python3 Run](#python3-run-1)
+    + [Makefile Run](#makefile-run-1)
+    + [Response](#response-1)
   * [```--biggest-loser```](#-----biggest-loser---)
     + [Python3 Run](#python3-run-2)
+    + [Makefile Run](#makefile-run-2)
+    + [Response](#response-2)
   * [```--busy-day```](#-----busy-day---)
     + [Python3 Run](#python3-run-3)
+    + [Makefile Run](#makefile-run-3)
+    + [Response](#response-3)
 
 ---
 
-## Capital One Investing Coding Test Instructions
+## Stock Investing
 
-What We Are Looking For:
+### Sources
 
-+ We are looking for production quality code with a high level of software craftsmanship.  We value readable
-code that is tested and easy to modify and maintain, over code that runs in the fewest CPU cycles possible.
-+ We would like you to write an application that:
-  + Retrieves pricing data from the [Quandl WIKI Stock Price API](https://urldefense.proofpoint.com/v2/url?u=https-3A__www.quandl.com_databases_WIKIP&d=DwMFaQ&c=pLULRYW__RtkwsQUPxJVDGboCTdgji3AcHNJU0BpTJE&r=kepIekeKnmUGqfnZNVlrPHu_tMertO2EhArFHfiDIJyCJDfLPZ1NCOioFQV4aw8V&m=mzIO7jy1kzeSyRQcKo83WjUorQBbNrSya7V23VCMgHI&s=p14M8WXuZx6nUbTes6sa2vNtRLwTwfdfwXJTWrptxno&e=) for a given set of securities and date range
-  + Displays the **Average Monthly Open and Close** prices for each security for each month of data in the data set.
-  + The securities to use are: **COF**, **GOOGL**, and **MSFT**.  Perform this analysis for **Jan - June of 2017**
-  + Output the data in the below format, or optionally in a prettier format if you see fit.
-
-```json
-{"GOOGL": {"month":"2017-01", "average_open": "815.43", "average_close": "$818.34"},
-    {"month":"2017-02", "average_open": "825.87", "average_close": "$822.73"},
-    ...
-    {"month":"2017-05", "average_open": "945.24", "average_close": "$951.52"},
-    {"month":"2017-06", "average_open": "975.37", "average_close": "$977.11"}}
-```
-
+Retrieves Stocks pricing data from the [Quandl WIKI Stock Price API](https://urldefense.proofpoint.com/v2/url?u=https-3A__www.quandl.com_databases_WIKIP&d=DwMFaQ&c=pLULRYW__RtkwsQUPxJVDGboCTdgji3AcHNJU0BpTJE&r=kepIekeKnmUGqfnZNVlrPHu_tMertO2EhArFHfiDIJyCJDfLPZ1NCOioFQV4aw8V&m=mzIO7jy1kzeSyRQcKo83WjUorQBbNrSya7V23VCMgHI&s=p14M8WXuZx6nUbTes6sa2vNtRLwTwfdfwXJTWrptxno&e=) for a given set of securities and date range
 
 The documentation of the API can be found [here](https://www.quandl.com/databases/WIKIP/documentation/about).
 
-You have considerable latitude on how to display this data, obtain it, and what language to use.  Please do this
-in the way that feels most comfortable for you. Many candidates prefer to use a script which is run from the
-command line. Others choose a webpage that displays things. For others, it’s a live code notebook. What’s
-important is that it is well crafted and reproducible by us.
+### Stocks
 
-We’d also like you to try and add at least one "additional feature" to this program (and if you’re able, all of them).
-They’re listed below as command line switches for a terminal program, but we’d accept any method that lets a
-user decide how to display this data.
+Securities to use are: **COF**, **GOOGL**, and **MSFT**.
 
+### Date Range
+
+Perform this analysis for **Jan - June of 2017**
+
+### Functionality
+
++ **`--avg-monthly-open-close`**: Average Monthly Open and Close prices for each security for each
+month of data in the data set..
 + **`--max-daily-profit`**: We’d like to know which day in our data set would provide
 the highest amount of profit for each security if purchased at the day’s low and sold at the day’s high.
 Please display the ticker symbol, date, and the amount of profit.
@@ -75,9 +75,17 @@ that somewhere too).
 opening price. Please display the ticker symbol and the number of days that security’s closing
 price was lower than that day’s opening price.
 
-When you have completed the exercise, please upload your entire solution to Github.com and send
-an email with the URL of your repository to COFI_Coding_Exercise@capitalone.com and include your name in the email.
-Please make sure you have an appropriate README documenting how we should compile (if necessary) and run your solution.
+### Output
+
+Output the data in the below format, or optionally in a prettier format if you see fit.
+
+```json
+{"GOOGL": {"month":"2017-01", "average_open": "815.43", "average_close": "$818.34"},
+    {"month":"2017-02", "average_open": "825.87", "average_close": "$822.73"},
+    ...
+    {"month":"2017-05", "average_open": "945.24", "average_close": "$951.52"},
+    {"month":"2017-06", "average_open": "975.37", "average_close": "$977.11"}}
+```
 
 ---
 

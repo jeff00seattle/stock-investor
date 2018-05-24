@@ -412,7 +412,7 @@ class StockInvestor(object):
                 request_params=request_params,
                 request_label="{0}:{1}:{2}".format(wreq.stock, wreq.start_date, wreq.end_date)
             )
-        except Exception as ex:
+        except Exception:
             return None
 
         if response is None:
